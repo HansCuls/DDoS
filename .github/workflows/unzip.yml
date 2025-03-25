@@ -1,23 +1,27 @@
-name: Unzip File  
-on:  
+name: Unzip File
+
+on:
   push:
     paths:
-      - "**.zip"  
+      - "**.zip"
 
-jobs:  
-  extract:  
-    runs-on: ubuntu-latest  
-    steps:  
-      - name: Checkout Repository  
-        uses: actions/checkout@v3  
+jobs:
+  extract:
+    runs-on: ubuntu-latest
 
-      - name: Extract ZIP Files  
-        run: unzip -o "*.zip" -d extracted_files  
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Commit and Push Changes  
-        run: |  
-          git config --global user.name "github-actions"  
-          git config --global user.email "github-actions@github.com"  
-          git add extracted_files  
-          git commit -m "Extracted ZIP files" || echo "No changes to commit"  
-          git push
+      - name: Extract ZIP Files
+        run: |
+          mkdir -p extracted_files
+          unzip -o "*.zip" -d extracted_files
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add extracted_files
+          git commit -m "Extracted ZIP files" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
